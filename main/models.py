@@ -20,7 +20,12 @@ class Post(models.Model):
     image = models.ImageField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    likes = models.PositiveIntegerField(default=0)
+    dislikes =models.PositiveIntegerField(default=0)
+    views =models.PositiveIntegerField(default=0)
 
+    class Meta:
+        ordering = ('-created_at',)
 
     def __str__(self):
         return self.title 
