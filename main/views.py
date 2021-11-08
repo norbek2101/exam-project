@@ -8,6 +8,9 @@ def home(request):
 def blog(request):
     return render(request, 'main/pages/blog.html', {'post': Post.objects.all()} )
 
+def post_detail(request, pk):
+    return render(request, 'main/pages/post-details.html', {'post': Post.objects.get(id=pk)} )
+
 # Category  pages
 def lifestyle(request):
     lifestyle = Category.objects.get(id=1)

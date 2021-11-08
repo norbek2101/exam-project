@@ -6,6 +6,7 @@ urlpatterns = [
     # Main page
     path('', home, name='home'),
     path('blog/', blog, name='blog-page'),
+    path('post_detail/<int:pk>/', post_detail, name='post-detail'),
 
     # Authentication
     path('register/', register, name='registr'),

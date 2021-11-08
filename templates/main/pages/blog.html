@@ -64,7 +64,7 @@
                       </div>
                       <div class="down-content">
                         <span>{{ p.category }}</span>
-                        <a href="post-details.html"><h4>{{ p.title }}</h4></a>
+                        <a href="{% url 'post-detail' p.id %}"><h4>{{ p.title }}</h4></a>
                         <ul class="post-info">
                           <li><a href="#">{{ p.author }}</a></li>
                           <li><a href="#">{{ p.created_at |date:"M d, Y"}}</a></li>
