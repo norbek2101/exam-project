@@ -1,33 +1,16 @@
-{% comment %}
-{#<!-- ***** Preloader Start ***** -->#}
-{#  <div id="preloader">#}
-{#      <div class="jumper">#}
-{#          <div></div>#}
-{#          <div></div>#}
-{#          <div></div>#}
-{#      </div>#}
-{#  </div>  #}
-{#<!-- ***** Preloader End ***** -->#}
-{% endcomment %}
-
-
-{#<!-- Header -->#}
 <header class="">
     <nav class="navbar navbar-expand-lg">
         <div class="container">
-            <a class="navbar-brand" href="index.html"><h2>Stand Blog<em>.</em></h2></a>
+            <a class="navbar-brand" href="{% url 'home' %}"><h2>Stand Blog<em>.</em></h2></a>
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
                     aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="index.html">Home
+                    <li class="nav-item ">
+                        <a class="nav-link" href="{% url 'home' %}">Home
                         </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="about.html">About Us</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'blog-page' %}">Blog</a>
@@ -47,12 +30,33 @@
                         </div>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'registr' %}">Register</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{% url 'signin' %}">Login</a>
+                        <a class="nav-link" href="{% url 'about' %}">About Us</a>
                     </li>
                 </ul>
+                <ul class="navbar-nav ml-auto">
+                    
+                    {% if request.user.is_authenticated %}
+                        <li class="nav-item">
+                            <button type="submit">
+                                <a class="nav-link" href="{% url 'post-create' %}">New_Post</a>
+                            </button>
+                        </li>
+                        <li class="nav-item">
+                            <a href="" class="nav-link"><span class="hello-msg"> <i>{{ request.user }} </i> </span></a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                     {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'signin' %}">Login</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'registr' %}">Register</a>
+                        </li>   
+                    {% endif %}
+                </ul>
+                
             </div>
         </div>
     </nav>

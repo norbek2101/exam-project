@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 
 
 class Category(models.Model):
@@ -23,7 +24,7 @@ class Post(models.Model):
     category = models.ForeignKey(Category, on_delete=models.SET_NULL, null=True, blank=True)
     title = models.CharField(max_length=200)
     content = models.TextField()
-    image = models.ImageField()
+    image = models.ImageField(default='default.jpg')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     likes = models.PositiveIntegerField(default=0)
@@ -33,6 +34,9 @@ class Post(models.Model):
 
     class Meta:
         ordering = ('-created_at',)
+
+    def get_absolute_url(self):
+        return reverse('post-detail', kwargs={'pk': self.pk})    
 
     def __str__(self):
         return self.title 

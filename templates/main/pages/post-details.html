@@ -72,6 +72,8 @@
                       <li><a href="#">{{ post.author }}</a></li>
                       <li><a href="#">{{ post.created_at | date:"M d, Y" }}</a></li>
                       <li><a href="#">10 Comments</a></li>
+                      <li><img style="width:20px" src="https://img.icons8.com/ios-glyphs/30/000000/visible--v1.png"/><span class="pl-2">{{post.views}}</span></li>
+                                                        
                     </ul>
                     <p>{{ post.content }}</p>
                     <div class="post-options">

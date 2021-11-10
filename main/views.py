@@ -1,12 +1,19 @@
 from django.http import request
 from django.shortcuts import redirect, render
 from .models import Category, Post, Tag
-from django.views.generic import  ListView, DetailView
+from django.views.generic import  ListView, CreateView
+from .forms import CreateUserForm
+from django.contrib import messages
+from django.contrib import auth
+from django.db.models import F
 
 
 # Main page
 def home(request):
     return render(request, 'main/index.html')
+
+def about(request):
+    return render(request, 'main/pages/about.html')    
 
  
 class BlogListView(ListView):
@@ -24,9 +31,17 @@ class BlogListView(ListView):
 def post_detail(request, pk):
     post = Post.objects.get(id=pk)
     tags = post.tags.all()
-    context = {'post':post, 'tags':tags}
+    views = Post.objects.filter(pk=post.pk).update(views=F('views') + 1)
+    context = {'post':post, 'tags':tags, 'views':views}
     return render(request,'main/pages/post-details.html', context)
 
+class PostCreateView(CreateView):
+    model = Post
+    fields = ['category', 'title', 'content', 'tags', 'image']
+
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
 
 
 # Category  pages
@@ -133,12 +148,40 @@ class TravelView(ListView):
 
 # Authentication
 def register(request):
-    return render(request, 'main/pages/registr.html')
+    form = CreateUserForm()
+
+    if request.method == 'POST':
+        form = CreateUserForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            username = form.cleaned_data.get('username')
+
+            messages.success(request, 'Account was created for ' + username)
+            return redirect('signin')
+
+    context = {'form': form}
+    return render(request, 'main/pages/registr.html', context)
 
 
 def login(request):
-    return render(request, 'main/pages/signin.html')
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
 
+        user = auth.authenticate(request, username=username, password=password)
+
+        if user is not None:
+            auth.login(request, user)
+            return redirect('blog-page')
+        else:
+            messages.info(request, 'Username OR Password is incorrect')
+
+    context = {}
+    return render(request, 'main/pages/signin.html', context)
+
+def logout(request):
+    auth.logout(request)
+    return redirect('signin')    
 
 def gotopage(request):
     page = request.GET['page']
