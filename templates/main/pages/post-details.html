@@ -77,11 +77,12 @@
                     <div class="post-options">
                       <div class="row">
                         <div class="col-6">
-                          <ul class="post-tags">
-                            <li><i class="fa fa-tags"></i></li>
-                            <li><a href="#">Best Templates</a>,</li>
-                            <li><a href="#">TemplateMo</a></li>
-                          </ul>
+                          {% for t in tags %}
+                            <ul class="post-tags">
+                              <li><i class="fa fa-tags"></i></li>
+                              <li><a href="#">{{ t }}</a></li>
+                            </ul>
+                          {% endfor %}
                         </div>
                         <div class="col-6">
                           <ul class="post-share">
