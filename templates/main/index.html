@@ -1,8 +1,6 @@
 {% extends 'main/base.html' %}
 {% load static %}
 {% block content %}
-{#    <!-- Page Content -->#}
-{#    <!-- Banner Starts Here -->#}
     <div class="main-banner header-text">
         <div class="container-fluid">
             <div class="owl-banner owl-carousel">
@@ -326,14 +324,11 @@
                                         <h2>Tag Clouds</h2>
                                     </div>
                                     <div class="content">
-                                        <ul>
-                                            <li><a href="#">Lifestyle</a></li>
-                                            <li><a href="#">Creative</a></li>
-                                            <li><a href="#">HTML5</a></li>
-                                            <li><a href="#">Inspiration</a></li>
-                                            <li><a href="#">Motivation</a></li>
-                                            <li><a href="#">PSD</a></li>
-                                            <li><a href="#">Responsive</a></li>
+                                        {% for t in tags %}
+                                            <ul>
+                                                <li><a href="#">{{ t }}</a></li>
+                                            </ul>
+                                        {% endfor %}
                                         </ul>
                                     </div>
                                 </div>

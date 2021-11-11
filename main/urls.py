@@ -7,8 +7,13 @@ urlpatterns = [
     path('', home, name='home'),
     path('blog/', BlogListView.as_view(), name='blog-page'),
     path('post_detail/<int:pk>/',  post_detail, name='post-detail'),
-    path('post/new/', PostCreateView.as_view(template_name='main/pages/post_form.html'), name='post-create'),
+    # path('post_detail/<int:pk>/',  PostDetailView.as_view(), name='post-detail'),
+    path('like/<int:pk>/', like_post, name="like_post"),
+    path('dislike/<int:pk>/', dislike_post, name="dislike_post"),
+
+    path('post/new/', PostCreateView.as_view(), name='post-create'),
     path('about/', about, name='about'),
+    # path('profile/', profile, name='profile'),
 
 
     # Authentication

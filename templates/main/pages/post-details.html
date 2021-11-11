@@ -69,11 +69,19 @@
                     <span>{{ post.category }}</span>
                     <a href="post-details.html"><h4>{{ post.title }}</h4></a>
                     <ul class="post-info">
-                      <li><a href="#">{{ post.author }}</a></li>
+                      <li><a href="#">{{ post.author | capfirst }}</a></li>
                       <li><a href="#">{{ post.created_at | date:"M d, Y" }}</a></li>
-                      <li><a href="#">10 Comments</a></li>
+                      <li><a href="#">{{num_comments}} Comments</a></li>
                       <li><img style="width:20px" src="https://img.icons8.com/ios-glyphs/30/000000/visible--v1.png"/><span class="pl-2">{{post.views}}</span></li>
-                                                        
+                      <form style="display: inline-block;" action="{% url 'like_post' post.pk %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" name="post_id" value='{{post.pk}}' class="btn btn-light btn-sm"><img style="width:25px" src="https://img.icons8.com/material-sharp/50/000000/facebook-like.png"/><span class="pl-2">{{post.total_likes}}</span></button>
+                      </form>
+                      <form style="display: inline-block;" action="{% url 'dislike_post' post.pk %}" method="post">
+                          {% csrf_token %}
+                          <button type="submit" name="post_id" value='{{post.pk}}' class="btn btn-light btn-sm"><img style="width:25px" src="https://img.icons8.com/material/24/000000/thumbs-down--v1.png"/><span class="pl-2">{{post.total_dislikes}}</span></button>
+                      </form>
+                      
                     </ul>
                     <p>{{ post.content }}</p>
                     <div class="post-options">
@@ -99,87 +107,53 @@
                 </div>
               </div>
               <div class="col-lg-12">
-                <div class="sidebar-item comments">
-                  <div class="sidebar-heading">
-                    <h2>4 comments</h2>
-                  </div>
-                  <div class="content">
-                    <ul>
-                      <li>
-                        <div class="author-thumb">
-                          <img src="assets/images/comment-author-01.jpg" alt="">
-                        </div>
-                        <div class="right-content">
-                          <h4>Charles Kate<span>May 16, 2020</span></h4>
-                          <p>Fusce ornare mollis eros. Duis et diam vitae justo fringilla condimentum eu quis leo. Vestibulum id turpis porttitor sapien facilisis scelerisque. Curabitur a nisl eu lacus convallis eleifend posuere id tellus.</p>
-                        </div>
-                      </li>
-                      <li class="replied">
-                        <div class="author-thumb">
-                          <img src="assets/images/comment-author-02.jpg" alt="">
-                        </div>
-                        <div class="right-content">
-                          <h4>Thirteen Man<span>May 20, 2020</span></h4>
-                          <p>In porta urna sed venenatis sollicitudin. Praesent urna sem, pulvinar vel mattis eget.</p>
-                        </div>
-                      </li>
-                      <li>
-                        <div class="author-thumb">
-                          <img src="assets/images/comment-author-03.jpg" alt="">
-                        </div>
-                        <div class="right-content">
-                          <h4>Belisimo Mama<span>May 16, 2020</span></h4>
-                          <p>Nullam nec pharetra nibh. Cras tortor nulla, faucibus id tincidunt in, ultrices eget ligula. Sed vitae suscipit ligula. Vestibulum id turpis volutpat, lobortis turpis ac, molestie nibh.</p>
-                        </div>
-                      </li>
-                      <li class="replied">
-                        <div class="author-thumb">
-                          <img src="assets/images/comment-author-02.jpg" alt="">
-                        </div>
-                        <div class="right-content">
-                          <h4>Thirteen Man<span>May 22, 2020</span></h4>
-                          <p>Mauris sit amet justo vulputate, cursus massa congue, vestibulum odio. Aenean elit nunc, gravida in erat sit amet, feugiat viverra leo.</p>
-                        </div>
-                      </li>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-              <div class="col-lg-12">
                 <div class="sidebar-item submit-comment">
                   <div class="sidebar-heading">
                     <h2>Your comment</h2>
                   </div>
                   <div class="content">
-                    <form id="comment" action="#" method="post">
+                    <form id="comment" method="post">
+                       {% csrf_token %}
                       <div class="row">
-                        <div class="col-md-6 col-sm-12">
-                          <fieldset>
-                            <input name="name" type="text" id="name" placeholder="Your name" required="">
-                          </fieldset>
-                        </div>
-                        <div class="col-md-6 col-sm-12">
-                          <fieldset>
-                            <input name="email" type="text" id="email" placeholder="Your email" required="">
-                          </fieldset>
-                        </div>
-                        <div class="col-md-12 col-sm-12">
-                          <fieldset>
-                            <input name="subject" type="text" id="subject" placeholder="Subject">
-                          </fieldset>
+                        <div class="col-lg-12">
+                           {{ form }}
                         </div>
                         <div class="col-lg-12">
                           <fieldset>
-                            <textarea name="message" rows="6" id="message" placeholder="Type your comment" required=""></textarea>
-                          </fieldset>
-                        </div>
-                        <div class="col-lg-12">
-                          <fieldset>
-                            <button type="submit" id="form-submit" class="main-button">Submit</button>
+                            <button type="submit"  class="main-button">Commit</button>
                           </fieldset>
                         </div>
                       </div>
                     </form>
+                  </div>
+                </div>
+              </div>
+              
+              <div class="col-lg-12">
+                <div class="sidebar-item comments">
+                  <div class="sidebar-heading">
+                    <h2> {{num_comments}} comments</h2>
+                  </div>
+                  <div class="content">
+                    
+                    {% for post_comment in post_comments %}
+                      <ul>
+                          <li>
+                            <div class="right-content">
+                              <h4>{{ post_comment.author|capfirst }}<span>{{post_comment.date_commited | date:'M d, Y'}}</span></h4>
+                              <p>{{ post_comment.comment }}</p>
+                            </div>
+                          </li>
+                          <!-- <li class="replied">
+                            <div class="right-content">
+                              <h4>Thirteen Man<span>May 20, 2020</span></h4>
+                              <p>In porta urna sed venenatis sollicitudin. Praesent urna sem, pulvinar vel mattis eget.</p>
+                            </div>
+                          </li> -->
+                      </ul>
+                    {% endfor %}
+                      
+                    
                   </div>
                 </div>
               </div>

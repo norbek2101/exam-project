@@ -1,16 +1,20 @@
 from django.http import request
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from .models import Category, Post, Tag
-from django.views.generic import  ListView, CreateView
-from .forms import CreateUserForm
+from django.views.generic import  ListView, CreateView, DetailView
+from .forms import *
 from django.contrib import messages
 from django.contrib import auth
 from django.db.models import F
+from django.contrib.auth.decorators import login_required
+from django.db.models import Count
 
 
 # Main page
 def home(request):
-    return render(request, 'main/index.html')
+    tags = Tag.objects.all()
+    context={'tags':tags}
+    return render(request, 'main/index.html', context)
 
 def about(request):
     return render(request, 'main/pages/about.html')    
@@ -27,17 +31,71 @@ class BlogListView(ListView):
         context['tags'] =  Tag.objects.all()
         return context
 
+    # def get_queryset(self):
+    #     return Post.objects.annotate(num_comments=Count('comment')).order_by('-num_comments')    
+
+# class PostDetailView(DetailView):
+#     model = Post
+#     form = CommentForm
+#     template_name = 'main/pages/post-details.html'
+
+#     def post(self, request, *args, **kwargs):
+#         form = CommentForm(request.POST)
+#         if form.is_valid():
+#             post = self.get_object()
+#             form.instance.author = request.user
+#             form.instance.post = post
+#             form.save()
+#             return redirect('post-detail', post.pk)
+
+
+#     def get_context_data(self, **kwargs):
+#         post_comments = self.get_object().comment_set.all()
+#         context = super().get_context_data(**kwargs)
+#         context['tags'] = self.get_object().tags.all()
+#         context['form'] = self.form
+#         context['post_comments'] = post_comments
+#         return context 
+
+
+     
+
+def like_post(request, pk):
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    post.likes.add(request.user)
+    return redirect('post-detail', pk)
+
+
+def dislike_post(request, pk):
+    post = get_object_or_404(Post, id=request.POST.get('post_id'))
+    post.dislikes.add(request.user)
+    return redirect('post-detail', pk)          
+
 
 def post_detail(request, pk):
     post = Post.objects.get(id=pk)
     tags = post.tags.all()
-    views = Post.objects.filter(pk=post.pk).update(views=F('views') + 1)
-    context = {'post':post, 'tags':tags, 'views':views}
+    post_comments = post.comment_set.all()
+    num_comments = post_comments.count()
+    form = CommentForm()
+    views = Post.objects.filter(pk=pk).update(views=F('views') + 1)
+    if request.method == 'POST':
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            post = post
+            form.instance.author = request.user
+            form.instance.post = post
+            form.save()
+            return redirect('post-detail', post.pk)
+    
+    context = {'views':views, 'form':form, 'post':post, 'tags':tags, 'post_comments':post_comments, 'num_comments':num_comments}
     return render(request,'main/pages/post-details.html', context)
+
 
 class PostCreateView(CreateView):
     model = Post
     fields = ['category', 'title', 'content', 'tags', 'image']
+    template_name='main/pages/post_form.html'
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -179,10 +237,15 @@ def login(request):
     context = {}
     return render(request, 'main/pages/signin.html', context)
 
+@login_required
 def logout(request):
     auth.logout(request)
     return redirect('signin')    
 
 def gotopage(request):
     page = request.GET['page']
-    return redirect('/?page='+page)    
+    return redirect('/?page='+page)   
+
+
+
+    
