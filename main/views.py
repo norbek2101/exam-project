@@ -13,7 +13,9 @@ from django.db.models import Count
 # Main page
 def home(request):
     tags = Tag.objects.all()
-    context={'tags':tags}
+    latest_posts = Post.objects.order_by('-views')[:3]
+    post = Post.objects.all()
+    context={'tags':tags, 'latest':latest_posts, 'post':post}
     return render(request, 'main/index.html', context)
 
 def about(request):
@@ -59,13 +61,13 @@ class BlogListView(ListView):
 
 
      
-
+@login_required
 def like_post(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('post_id'))
     post.likes.add(request.user)
     return redirect('post-detail', pk)
 
-
+@login_required
 def dislike_post(request, pk):
     post = get_object_or_404(Post, id=request.POST.get('post_id'))
     post.dislikes.add(request.user)
@@ -79,18 +81,18 @@ def post_detail(request, pk):
     num_comments = post_comments.count()
     form = CommentForm()
     views = Post.objects.filter(pk=pk).update(views=F('views') + 1)
-    if request.method == 'POST':
-        form = CommentForm(request.POST)
-        if form.is_valid():
-            post = post
-            form.instance.author = request.user
-            form.instance.post = post
-            form.save()
-            return redirect('post-detail', post.pk)
+    if request.user.is_authenticated:
+        if request.method == 'POST':
+            form = CommentForm(request.POST)
+            if form.is_valid():
+                post = post
+                form.instance.author = request.user
+                form.instance.post = post
+                form.save()
+                return redirect('post-detail', post.pk)
     
     context = {'views':views, 'form':form, 'post':post, 'tags':tags, 'post_comments':post_comments, 'num_comments':num_comments}
     return render(request,'main/pages/post-details.html', context)
-
 
 class PostCreateView(CreateView):
     model = Post

@@ -36,7 +36,7 @@
                                 <div class="col-lg-6">
                                     <div class="blog-post">
                                         <div class="blog-thumb">
-                                            <img src="{{ p.image.url }}" alt="">
+                                            <img style="width:370px; height:auto;" src="{{ p.image.url }}" alt="">
                                         </div>
                                         <div class="down-content">
                                             <span>{{ p.category }}</span>
@@ -100,20 +100,14 @@
                                         <h2>Recent Posts</h2>
                                     </div>
                                     <div class="content">
-                                        <ul>
-                                            <li><a href="post-details.html">
-                                                <h5>Vestibulum id turpis porttitor sapien facilisis scelerisque</h5>
-                                                <span>May 31, 2020</span>
-                                            </a></li>
-                                            <li><a href="post-details.html">
-                                                <h5>Suspendisse et metus nec libero ultrices varius eget in risus</h5>
-                                                <span>May 28, 2020</span>
-                                            </a></li>
-                                            <li><a href="post-details.html">
-                                                <h5>Swag hella echo park leggings, shaman cornhole ethical coloring</h5>
-                                                <span>May 14, 2020</span>
-                                            </a></li>
-                                        </ul>
+                                        {% for lp in latest %}
+                                            <ul>
+                                                <li><a href="{% url 'post-detail' lp.id %}">
+                                                    <h5>{{lp.title}}</h5>
+                                                    <span>{{ lp.created_at | date:'M d, Y' }}</span>
+                                                </a></li>
+                                            </ul>
+                                        {% endfor %}
                                     </div>
                                 </div>
                             </div>
